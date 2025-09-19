@@ -1,0 +1,18 @@
+[project]
+name = "deepchart"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "dash>=3.2.0",
+    "eventregistry>=9.1",
+    "firecrawl-py>=4.3.6",
+    "openai-agents>=0.3.1",
+    "pandas>=2.3.2",
+]
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.3.0",
+]
