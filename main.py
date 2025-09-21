@@ -6,10 +6,11 @@ import json
 import pandas as pd
 from map import make_choropleth
 from dash import Dash, dcc, html
+import argparse
 
 
 # run_streamed() works async
-async def main():
+async def main(prompt: str):
     app = Dash()
 
     state_dict = {}
@@ -24,7 +25,7 @@ async def main():
 
     result = Runner.run_streamed(
         agents["instruct"],
-        input="Hello",
+        input=prompt,
     )
     print("=== Run starting ===")
 
@@ -61,11 +62,18 @@ async def main():
 
     df = pd.DataFrame(state_dict)
 
-    _, figure = make_choropleth(df)
+    figure = make_choropleth(df)
 
     app.layout = [html.H1("Deep Chart"), dcc.Graph(figure=figure)]
     app.run(debug=True)
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--p", "--prompt")
+    args = parser.parse_args()
+
+    if args.prompt:
+        raise Exception("Please enter a research prompt.")
+
+    main(args.prompt)

@@ -47,4 +47,4 @@ def make_choropleth(df: pd.DataFrame):
         hoverlabel_font_color="black",
     )
 
-    return df, figure
+    return figure
