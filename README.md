@@ -1,4 +1,6 @@
 # deepchart
+> [!NOTE]
+>  Currently a work in progress
 
 DeepChart is a deep-research agent built on top of 
 [OpenAI Agents SDK](https://openai.github.io/openai-agents-python/) and a custom 
