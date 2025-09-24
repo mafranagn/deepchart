@@ -7,13 +7,16 @@ import pandas as pd
 from map import make_choropleth
 from dash import Dash, dcc, html
 import argparse
+from state import US_STATES
 
 
 # run_streamed() works async
 async def main(prompt: str):
     app = Dash()
 
-    state_dict = {}
+    complete_dict = {"locations": [], "animation_frame": [], "color": []}
+
+    inter_dict = {}
 
     client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"), timeout=600.0)
     set_default_openai_client(client)  # Set client for agent library ????
@@ -48,11 +51,11 @@ async def main(prompt: str):
                 if last_tool_call == "add_incident":
                     output = json.loads(event.item.output)
                     state_code = output.get("incident").get("state_code")
-                    if state_code in state_dict:
-                        state_dict[state_code] += 1
+                    year = output.get("incident").get("year")
+                    if state_code in inter_dict and year in inter_dict[state_code]:
+                        inter_dict[state_code][year]["color"] += 1
                     else:
-                        state_dict[state_code] = 1
-
+                        inter_dict[state_code][year]["color"] = 1
             elif event.item.type == "message_output_item":
                 print(
                     f"-- Message output:\n {ItemHelpers.text_message_output(event.item)}"
@@ -60,7 +63,16 @@ async def main(prompt: str):
             else:
                 pass  # Ignore other event types
 
-    df = pd.DataFrame(state_dict)
+    # CREATE complete_dict from inter_dict
+    for state_code in inter_dict:
+        for year in inter_dict[state_code]:
+            complete_dict["locations"].append([state_code])
+            complete_dict["animation_frame"].append(inter_dict[state_code]["year"])
+            complete_dict["color"].append(inter_dict[state_code][year]["color"])
+
+    # CREATE final_dict, map()-ready df
+    final_dict = complete_dict.merge(US_STATES)
+    df = pd.DataFrame(final_dict)
 
     figure = make_choropleth(df)
 

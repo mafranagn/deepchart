@@ -19,7 +19,7 @@ def add_incident(state: str, year: int, description: str, references: List[str])
     Returns:
         JSON string with shape: {
           "incident": {
-            "state_code": str, "state_name": str, "description": str, "references": List[str]
+            "state_code": str, "state_name": str, "description": str, "year": year, "references": List[str]
           }
         }
     """

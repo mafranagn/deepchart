@@ -5,60 +5,6 @@ from agents import function_tool
 from typing import List
 
 
-STATE_LIST = [
-    "Alabama",
-    "Alaska",
-    "Arizona",
-    "Arkansas",
-    "California",
-    "Colorado",
-    "Connecticut",
-    "Delaware",
-    "Florida",
-    "Georgia",
-    "Hawaii",
-    "Idaho",
-    "Illinois",
-    "Indiana",
-    "Iowa",
-    "Kansas",
-    "Kentucky",
-    "Louisiana",
-    "Maine",
-    "Maryland",
-    "Massachusetts",
-    "Michigan",
-    "Minnesota",
-    "Mississippi",
-    "Missouri",
-    "Montana",
-    "Nebraska",
-    "Nevada",
-    "New Hampshire",
-    "New Jersey",
-    "New Mexico",
-    "New York",
-    "North Carolina",
-    "North Dakota",
-    "Ohio",
-    "Oklahoma",
-    "Oregon",
-    "Pennsylvania",
-    "Rhode Island",
-    "South Carolina",
-    "South Dakota",
-    "Tennessee",
-    "Texas",
-    "Utah",
-    "Vermont",
-    "Virginia",
-    "Washington",
-    "West Virginia",
-    "Wisconsin",
-    "Wyoming",
-]
-
-
 @function_tool(name_override="event_registry_search")
 def event_registry(
     keywords: List(str),
@@ -73,7 +19,7 @@ def event_registry(
     Args:
         keywords: Search keywords. The tool trims to a cumulative total of 15 words across the list of keyword strings.
         ignore: Keywords to ignore during search.
-        states: Optional list of U.S. state names. Defaults to all 50 states.
+        states: List of U.S. state names.
         start_date: Optional ISO date (YYYY-MM-DD) inclusive start.
         end_date: Optional ISO date (YYYY-MM-DD) inclusive end.
 

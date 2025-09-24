@@ -24,7 +24,7 @@ def batch_scrape(urls: List[str]) -> str:
     resp = firecrawl.batch_scrape(urls, wait_timeout=120, formats=["markdown"])
     # Wait up to 120 seconds for the scrape to complete
 
-    data = resp.get("data", [])
+    data = resp.get("data", [])  # Get data dictionary from resp
     results = []
     for item in data:
         results.append(
