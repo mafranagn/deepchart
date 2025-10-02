@@ -14,9 +14,13 @@ from state import US_STATES
 async def main(prompt: str):
     app = Dash()
 
+    # Dictionaries for make_choropleth(df)
     complete_dict = {"locations": [], "animation_frame": [], "color": []}
-
     inter_dict = {}
+
+    # Dictionaries for references df
+    complete_ref = {"state_abbr": [], "years": [], "references": []}
+    inter_ref = {}
 
     client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"), timeout=600.0)
     set_default_openai_client(client)  # Set client for agent library ????
@@ -52,10 +56,13 @@ async def main(prompt: str):
                     output = json.loads(event.item.output)
                     state_code = output.get("incident").get("state_code")
                     year = output.get("incident").get("year")
+                    reference = output.get("incident").get("reference")
                     if state_code in inter_dict and year in inter_dict[state_code]:
                         inter_dict[state_code][year]["color"] += 1
+                        inter_ref[state_code][year]["references"].append(reference)
                     else:
                         inter_dict[state_code][year]["color"] = 1
+                        inter_ref[state_code][year]["references"] = [reference]
             elif event.item.type == "message_output_item":
                 print(
                     f"-- Message output:\n {ItemHelpers.text_message_output(event.item)}"
@@ -63,16 +70,23 @@ async def main(prompt: str):
             else:
                 pass  # Ignore other event types
 
-    # CREATE complete_dict from inter_dict
+    # CREATE complete_dict and complete_ref from inter_dict and inter_ref, respectively
     for state_code in inter_dict:
         for year in inter_dict[state_code]:
-            complete_dict["locations"].append([state_code])
-            complete_dict["animation_frame"].append(inter_dict[state_code]["year"])
+            complete_dict["locations"].append(state_code)
+            complete_dict["animation_frame"].append(year)
             complete_dict["color"].append(inter_dict[state_code][year]["color"])
 
-    # CREATE final_dict, map()-ready df
-    final_dict = complete_dict.merge(US_STATES)
+            complete_ref["state_abbr"].append(state_code)
+            complete_ref["years"].append(year)
+            complete_ref["references"].extend(inter_ref[state_code][year]["references"])
+
+    # CREATE final_dict, make_choropleth()-ready df
+    us_df = pd.Dataframe(US_STATES)
+    final_dict = complete_dict.merge(us_df, how="left", on="locations")
+
     df = pd.DataFrame(final_dict)
+    # ref_df = pd.DataFrame(complete_ref)
 
     figure = make_choropleth(df)
 
